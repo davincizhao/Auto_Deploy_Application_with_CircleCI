@@ -1,4 +1,14 @@
 version: 2.1
+# Use a package of configuration called an orb.
+orbs:
+  # Choose either one of the orbs below
+  # Declare a dependency on the welcome-orb
+  # welcome: circleci/welcome-orb@0.4.1
+  aws-cli: circleci/aws-cli@2.0.3
+# Orchestrate or schedule a set of jobs
+
+
+
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -9,8 +19,8 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            # Your code here
-            exit 1
+            aws cloudformation delete-stack --stack-name p3-${CIRCLE_WORKFLOW_ID:0:5}
+            
             
 jobs:
   build-frontend:
@@ -134,18 +144,19 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=back_end \
-              --stack-name back-end-stack-${CIRCLE_WORKFLOW_ID:0:7} \
+              --stack-name p3-${CIRCLE_WORKFLOW_ID:0:7} \
+              --region us-west-1
               # --parameter-overrides ID="your workflow id"  
-              
+      - destroy_environment        
       - run:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
               --tags project=front_end \
-              --stack-name front-end-stack-${CIRCLE_WORKFLOW_ID:0:7} \
+              --stack-name p3-${CIRCLE_WORKFLOW_ID:0:7} \
               # --parameter-overrides ID="your workflow id"  
-              
+      - destroy_environment      
           
             
 
