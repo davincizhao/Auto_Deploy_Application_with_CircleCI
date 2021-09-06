@@ -150,7 +150,7 @@ jobs:
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - print_id: 
           id: <<pipeline.id>>        
-      - destroy_environment        
+      #- destroy_environment        
       - run:
           name: Ensure front-end infrastructure exist
           command: |
@@ -160,7 +160,7 @@ jobs:
               --stack-name p3-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
   
-      - destroy_environment      
+      #- destroy_environment      
           
             
 
