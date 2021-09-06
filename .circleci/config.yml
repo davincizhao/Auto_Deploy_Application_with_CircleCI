@@ -14,14 +14,16 @@ commands:
 
   destroy_environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-    
+    parameters:
+      st_name: 
+        type: string
        
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name p3-${CIRCLE_WORKFLOW_ID:0:5}
+            aws cloudformation delete-stack --stack-name parameters.st_name-${CIRCLE_WORKFLOW_ID:0:5}
             
             
 jobs:
@@ -146,29 +148,34 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=back_end \
-              --stack-name p3-${CIRCLE_WORKFLOW_ID:0:7} \
+              --stack-name BE-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
+      - destroy_environment: 
+          st_name: BE
       - print_id: 
           id: <<pipeline.id>>        
-      #- destroy_environment        
+             
       - run:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
               --tags project=front_end \
-              --stack-name p3-${CIRCLE_WORKFLOW_ID:0:7} \
+              --stack-name FE-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
   
-      #- destroy_environment      
+      - destroy_environment:
+          st_name: FE
           
       - run:
           name: Add back-end ip to ansible inventory
           command: |
+            echo "[all]" > project/.circleci/ansible/inventory.txt
+
             aws ec2 describe-instances   \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --filters Name=tag-value,Values="backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --output text >> inventory.txt            
+              --output text >> project/.circleci/ansible/inventory.txt            
             
       - persist_to_workspace:
           root: ~/
