@@ -147,8 +147,7 @@ jobs:
               --template-file .circleci/files/backend.yml \
               --tags project=back_end \
               --stack-name p3-${CIRCLE_WORKFLOW_ID:0:7} \
-              --region us-west-1
-              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - print_id: 
           id: <<pipeline.id>>        
       - destroy_environment        
@@ -159,7 +158,7 @@ jobs:
               --template-file .circleci/files/frontend.yml \
               --tags project=front_end \
               --stack-name p3-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
   
       - destroy_environment      
           
