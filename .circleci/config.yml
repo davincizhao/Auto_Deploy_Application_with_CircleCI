@@ -4,6 +4,14 @@ version: 2.1
 
 
 commands:
+
+  print_id:
+    parameters:
+      id: 
+        type: string
+    steps:
+      - run: echo << parameters.id >>
+
   destroy_environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     
@@ -140,7 +148,8 @@ jobs:
               --tags project=back_end \
               --stack-name p3-${CIRCLE_WORKFLOW_ID:0:7} \
               --region us-west-1
-              # --parameter-overrides ID="your workflow id"  
+      - print_id: 
+          id: <<pipeline.id>>        
       - destroy_environment        
       - run:
           name: Ensure front-end infrastructure exist
@@ -149,7 +158,7 @@ jobs:
               --template-file .circleci/files/frontend.yml \
               --tags project=front_end \
               --stack-name p3-${CIRCLE_WORKFLOW_ID:0:7} \
-              # --parameter-overrides ID="your workflow id"  
+                
       - destroy_environment      
           
             
