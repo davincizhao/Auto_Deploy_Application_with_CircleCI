@@ -166,19 +166,51 @@ jobs:
   
       - destroy_environment:
           st_name: FE
-          
+      - run: 
+          name: install tar and gzip for persist_to_workspace
+          command: yum install -y tar gzip 
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            echo "[all]" > ~/inventory.txt
+            echo "[web]" > ~/inventory.txt
 
             aws ec2 describe-instances   \
               --query Reservations[*].Instances[*].[PublicIpAddress] \
               --filters Name=tag-value,Values="backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --output text >> ~/inventory.txt            
             cat ~/inventory.txt
-      
-                         
+
+      - persist_to_workspace:
+          root: ~/
+          paths: 
+            - inventory.txt   
+    
+  configure-infrastructure:
+    docker:
+      # Docker image here that supports Ansible
+      - image: python:3.7-alpine3.11
+    steps:
+      # Checkout code from git
+      - checkout
+      # Add ssh keys with fingerprint
+      - add_ssh_keys: 
+          fingerprints: ["be:de:70:3b:28:76:a3:e7:44:45:80:e7:91:b9:e1:da:e6:58:67:23"]
+      # attach workspace
+      - run:
+          name: Install dependencies
+          command: |
+            # Your code here
+            apk add --update ansible 
+      - attach_workspace: 
+          at: ~/
+
+      - run:
+          name: Configure server
+          command: |
+            # Your code here
+            cat ~/inventory.txt
+            ansible-playbook -i inventory.txt .circleci/ansible/configure-server.yml
+      # Here's where you will add some code to rollback on failure                             
 
 workflows:
   default:
