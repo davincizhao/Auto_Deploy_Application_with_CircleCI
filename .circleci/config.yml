@@ -211,7 +211,10 @@ jobs:
             cat ~/inventory.txt
             ansible-playbook -i ~/inventory.txt .circleci/ansible/configure-server.yml
       # Here's where you will add some code to rollback on failure                             
-
+      - destroy_environment:
+          st_name: BE
+      - destroy_environment:
+          st_name: FE
 workflows:
   default:
     jobs:
