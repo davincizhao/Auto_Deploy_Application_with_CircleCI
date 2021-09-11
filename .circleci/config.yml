@@ -227,6 +227,7 @@ jobs:
           command: |
             # Your code here
             apk add --update ansible 
+            pip install awscli
       - attach_workspace: 
           at: ~/
 
@@ -234,8 +235,8 @@ jobs:
           name: Configure server
           command: |
             # Your code here
-            cat ~/inventory.txt
-            ansible-playbook -i ~/inventory.txt .circleci/ansible/configure-server.yml
+            cat .circleci/ansible/inventory.txt
+            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
       # Here's where you will add some code to rollback on failure                             
       - destroy_environment:
           wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
@@ -267,6 +268,13 @@ jobs:
 
       - restore_cache:
           keys: [backend-build]
+
+      - persist_to_workspace:
+          root: ~/
+          paths:
+
+            - project/backend/.env
+
       - run:
           name: Run migrations
           command: |
