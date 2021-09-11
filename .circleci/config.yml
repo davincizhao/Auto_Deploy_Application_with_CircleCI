@@ -265,7 +265,7 @@ jobs:
             echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> "backend/.env"
             echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> "backend/.env"
             echo NODE_ENV=development >> "backend/.env"
-
+            echo $TYPEORM_DATABASE
       - restore_cache:
           keys: [backend-build]
 
