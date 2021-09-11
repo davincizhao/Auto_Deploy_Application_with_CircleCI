@@ -12,15 +12,21 @@
 - name: "remove dependencies that are no longer required"
   become: yes
   apt: 
-    autoremove: yes
+    autoremove: "yes"
 
 
-- name: "install npm"
+- name: "install dependencies"
   become: yes
   apt:
     name: 
       - npm
       - nodejs
+      - python3
+      - tar
+      - gzip
+      - git
+    state: latest
+    update_cache: yes
 
 - name: "install pm2"
   become: yes
@@ -32,5 +38,5 @@
 
 - name: Creates directory
   file:
-    path: ~/web
+    path: ~/home/ubuntu/backend
     state: directory
