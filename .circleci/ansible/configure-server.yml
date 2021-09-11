@@ -22,12 +22,8 @@
 
       raw: test -e /usr/bin/python3 || (apt -y update && apt install -y python3)
       changed_when: false
-         
 
-  roles:
-    # Your code here
-    - configure-server
-  environment: 
+  environment:
     ENVIRONMENT: production
     TYPEORM_CONNECTION: postgres
     TYPEORM_ENTITIES: ./src/modules/domain/**/*.entity.ts
@@ -36,3 +32,9 @@
     TYPEORM_USERNAME: postgres
     TYPEORM_PASSWORD: post2gres
     TYPEORM_DATABASE: udacityPeo
+         
+
+  roles:
+    # Your code here
+    - configure-server
+

@@ -40,3 +40,7 @@
   file:
     path: ~/home/ubuntu/backend
     state: directory
+
+- name: print out env
+  debug: 
+    msg: "'{{ lookup('env', 'TYPEORM_HOST') }}' is the HOME environment variable"
