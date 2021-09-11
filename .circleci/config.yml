@@ -249,19 +249,21 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
+
+      - attach_workspace:
+          at: ~/
+
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Run migrations
           command: |
             cd backend
-            npm install
-            npm fund
-            npm audit fix --force
+            cat .env
             npm run migration > migrations.log
-      - run:
-          name: Send migration results to memstash
-          command: |
-            # Your code here
-            exit 1
+            cat migrations.log
+      - destroy_environment:
+          wf_id: ${CIRCLE_WORKFLOW_ID:0:7}      
      # Here's where you will add some code to rollback on failure      
 
 workflows:
