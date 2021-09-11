@@ -15,7 +15,7 @@ commands:
   destroy_environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      st_name: 
+      wf_id: 
         type: string
        
     steps:
@@ -23,7 +23,34 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name parameters.st_name-${CIRCLE_WORKFLOW_ID:0:5}
+            aws cloudformation delete-stack --stack-name parameters.FE-<< parameters.wf_id>>
+            aws cloudformation delete-stack --stack-name parameters.BE-<< parameters.wf_id>>
+            aws s3 rb s3://udapeople-<< parameters.wf_id >> --force
+
+  revert-migrations:
+    description: Revert the last migration if successfully run in the current workflow.
+    parameters:
+      # Add parameter here     
+      token:
+        type: string
+      wf_id: 
+        type: string
+
+    steps:
+      - run:
+          name: Revert migrations
+          # Add when this will run
+          when: on_fail
+          command: |
+            # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
+            SUCCESS = 1
+            if(( $SUCCESS==1 )); 
+            then
+              cd ~/project/backend
+              npm install
+            #  Add revert code here. You can find this in the Getting Started section.
+              npm run migration:revert
+            fi
             
             
 jobs:
@@ -150,8 +177,6 @@ jobs:
               --tags project=back_end \
               --stack-name BE-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
-      - destroy_environment: 
-          st_name: BE
       - print_id: 
           id: <<pipeline.id>>        
              
@@ -164,8 +189,6 @@ jobs:
               --stack-name FE-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
   
-      - destroy_environment:
-          st_name: FE
       - run: 
           name: install tar and gzip for persist_to_workspace
           command: yum install -y tar gzip 
@@ -183,8 +206,11 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths: 
-            - inventory.txt   
-    
+            - inventory.txt 
+  
+      - destroy_environment:
+          wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible
@@ -212,9 +238,32 @@ jobs:
             ansible-playbook -i ~/inventory.txt .circleci/ansible/configure-server.yml
       # Here's where you will add some code to rollback on failure                             
       - destroy_environment:
-          st_name: BE
-      - destroy_environment:
-          st_name: FE
+          wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+
+  run-migrations:
+    docker:
+      # Docker image here that supports NodeJS
+      - image: circleci/node:13.8.0
+      
+    steps:
+      # Checkout code from git
+      - checkout
+      - run:
+          name: Run migrations
+          command: |
+            cd backend
+            npm install
+            npm fund
+            npm audit fix --force
+            npm run migration > migrations.log
+      - run:
+          name: Send migration results to memstash
+          command: |
+            # Your code here
+            exit 1
+     # Here's where you will add some code to rollback on failure      
+
 workflows:
   default:
     jobs:
