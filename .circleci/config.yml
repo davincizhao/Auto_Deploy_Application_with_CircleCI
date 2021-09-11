@@ -280,7 +280,7 @@ jobs:
           command: |
             cd backend
             cat .env
-            npm run migration > migrations.log
+            npm run migrations > migrations.log
             cat migrations.log
       - destroy_environment:
           wf_id: ${CIRCLE_WORKFLOW_ID:0:7}      
