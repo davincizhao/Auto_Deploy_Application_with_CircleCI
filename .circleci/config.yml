@@ -288,18 +288,13 @@ jobs:
           name: Send migration results to memstash
           command: |
             cd backend
-            echo "CIRCLE_WORKFLOW_ID:0:7"
-            curl -H "Content-Type: text/plain" -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" \
-                --request GET \
-                
-                https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+            echo <<CIRCLE_WORKFLOW_ID:0:7>>
             
-            echo "ID of migration: migration-${CIRCLE_WORKFLOW_ID:0:7}"
+            echo  migration_${CIRCLE_WORKFLOW_ID:0:7}
       - destroy_environment:
           wf_id: ${CIRCLE_WORKFLOW_ID:0:7}      
      # Here's where you will add some code to rollback on failure      
-      - revert-migrations: 
-          wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      
 
   deploy-frontend:
     docker:
