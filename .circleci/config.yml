@@ -306,13 +306,13 @@ jobs:
       - image: amazon/aws-cli      
     steps:
       - checkout
-      - attach_workspace:
-          at: ~/
       - run:
           name: Install dependencies
           command: |
             # your code here                  
             apk add --update tar gzip ansible nodejs npm curl
+      - attach_workspace:
+            at: ~/            
       - run:
           name: Deploy frontend objects
           command: |
