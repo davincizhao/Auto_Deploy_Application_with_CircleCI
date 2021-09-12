@@ -311,12 +311,14 @@ jobs:
           name: Install dependencies
           command: |
             # your code here                  
+            apk add --update tar gzip ansible nodejs npm curl
       - run:
           name: Deploy frontend objects
           command: |
             cd frontend && \
-            
-            API_URL="http://${EC2_PUBLIC_URL}:3030" && \
+            export BE_IP=`tail .circleci/ansible/inventory.txt -n 1`
+            echo ${BE_IP}
+            export API_URL="http://${BE_IP}:3030" && \
             echo API_URL=$API_URL && \
             echo API_URL=$API_URL > .env && \
             echo ENVIRONMENT=development >> .env && \
@@ -328,8 +330,10 @@ jobs:
           command: |
             echo s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      #- revert-migrations
+          wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+      - revert-migrations:
+          wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   deploy-backend:
     docker:
@@ -356,26 +360,33 @@ jobs:
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      #- revert-migrations
+      - revert-migrations:
+          wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
 
 
 workflows:
   default:
     jobs:
-      #- build-frontend
-      #- build-backend
-      #- test-frontend:
-      #    requires: [build-frontend]
-      #- test-backend:
-      #    requires: [build-backend]
-      #- scan-backend:
-      #    requires: [build-backend]
-      #- scan-frontend:
-       #   requires: [build-frontend]
-      #- deploy-infrastructure 
-      #- configure-infrastructure: 
-      #    requires: [deploy-infrastructure]
-      - run-migrations 
-       #   requires: [configure-infrastructure]      
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+         requires: [build-frontend]
+      - deploy-infrastructure:
+         requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      - configure-infrastructure: 
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]      
+      - deploy-frontend:
+          requires: [deploy-infrastructure]      
+
+
+
 
