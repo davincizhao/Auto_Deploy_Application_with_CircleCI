@@ -23,8 +23,8 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name parameters.FE-<< parameters.wf_id>>
-            aws cloudformation delete-stack --stack-name parameters.BE-<< parameters.wf_id>>
+            aws cloudformation delete-stack --stack-name FE-<< parameters.wf_id>>
+            aws cloudformation delete-stack --stack-name BE-<< parameters.wf_id>>
             aws s3 rb s3://udapeople-<< parameters.wf_id >> --force
 
   revert-migrations:
@@ -41,10 +41,11 @@ commands:
           when: on_fail
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            
+            export ID=<< parameters.wf_id >>
+            echo ${ID}
             SUCCESS=`curl -H "Content-Type: text/plain" -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" \
                     --request GET \
-                    https://api.memstash.io/values/migration_<<parameters.wf_id>>`
+                    https://api.memstash.io/values/migration_${ID}`
             echo $SUCCESS
             if(( $SUCCESS==0 )); 
             then
@@ -359,7 +360,7 @@ jobs:
             cd .circleci/ansible && \
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy_environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - revert-migrations:
           wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
