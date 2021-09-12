@@ -31,8 +31,6 @@ commands:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
       # Add parameter here     
-      token:
-        type: string
       wf_id: 
         type: string
 
@@ -43,7 +41,11 @@ commands:
           when: on_fail
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
+            
+            SUCCESS=`curl -H "Content-Type: text/plain" -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" \
+                    --request GET \
+                    https://api.memstash.io/values/migration_<<parameters.wf_id>>`
+            echo $SUCCESS
             if(( $SUCCESS==1 )); 
             then
               cd ~/project/backend
@@ -282,10 +284,28 @@ jobs:
             cat .env
             npm run migrations > migrations.log
             cat migrations.log
+      - run:
+          name: Send migration results to memstash
+          command: |
+            cd backend
+            if grep -q "has been executed successfully" migrations.log then
+              curl -H "Content-Type: text/plain" -H "token: 974a9eac-715e-40e8-926f-7203819cb709" \
+                --request PUT \
+                --data '1' \
+                https://api.memstash.io/values/migration-${CIRCLE_WORKFLOW_ID:0:7}
+            else
+              curl -H "Content-Type: text/plain" -H "token: 974a9eac-715e-40e8-926f-7203819cb709" \
+                --request PUT \
+                --data '0' \
+                https://api.memstash.io/values/migration-${CIRCLE_WORKFLOW_ID:0:7}
+            fi
+
+            echo "ID of migration: migration-${CIRCLE_WORKFLOW_ID:0:7}"
       - destroy_environment:
           wf_id: ${CIRCLE_WORKFLOW_ID:0:7}      
      # Here's where you will add some code to rollback on failure      
-
+      - revert-migrations: 
+          wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   deploy-frontend:
     docker:
