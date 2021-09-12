@@ -46,7 +46,7 @@ commands:
                     --request GET \
                     https://api.memstash.io/values/migration_<<parameters.wf_id>>`
             echo $SUCCESS
-            if(( $SUCCESS==1 )); 
+            if(( $SUCCESS==0 )); 
             then
               cd ~/project/backend
               npm install
