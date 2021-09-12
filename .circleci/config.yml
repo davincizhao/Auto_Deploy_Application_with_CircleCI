@@ -172,7 +172,7 @@ jobs:
       # Checkout code from git
       - checkout
       - run:
-          name: Ensure back-end infrastructure exists
+              name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
@@ -288,24 +288,18 @@ jobs:
           name: Send migration results to memstash
           command: |
             cd backend
-            if grep -q "has been executed successfully" migrations.log then
-              curl -H "Content-Type: text/plain" -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" \
-                --request PUT \
-                --data '1' \
-                https://api.memstash.io/values/migration_{CIRCLE_WORKFLOW_ID:0:7}
-            else
-              curl -H "Content-Type: text/plain" -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" \
-                --request PUT \
-                --data '0' \
-                https://api.memstash.io/values/migration_{CIRCLE_WORKFLOW_ID:0:7}
-            fi
-
+            echo "CIRCLE_WORKFLOW_ID:0:7"
+            curl -H "Content-Type: text/plain" -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" \
+                --request GET \
+                
+                https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+            
             echo "ID of migration: migration-${CIRCLE_WORKFLOW_ID:0:7}"
       - destroy_environment:
           wf_id: ${CIRCLE_WORKFLOW_ID:0:7}      
      # Here's where you will add some code to rollback on failure      
       - revert-migrations: 
-          wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          wf_id: {CIRCLE_WORKFLOW_ID:0:7}
 
   deploy-frontend:
     docker:
