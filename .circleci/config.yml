@@ -391,16 +391,17 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            BE_IP=$(curl -H "token: " \
+            # get back Backend ip from memstash
+            BE_IP=$(curl -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" \
               --request GET https://api.memstash.io/values/IP)
-            URL="http://${BE}:3030/api/status"
+            URL="http://${BE_IP}:3030/api/status"
             curl -s "${URL}" 
       - run:
           name: Frontend smoke test.
           command: |
             if curl -s  "http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-1.amazonaws.com" | grep "Welcome"
             then
-              return 0
+              return 1
             else
               return 1
             fi
