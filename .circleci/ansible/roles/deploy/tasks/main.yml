@@ -3,12 +3,13 @@
     src: /root/project/backend_artifact.tar.gz
     dest: ~/home/ubuntu
 
-- name: "Install package dependencies"
+- name: "Install package and start npm"
   shell: |
     cd ~/home/ubuntu
     tar -xzvf backend_artifact.tar.gz -C backend
     rm backend_artifact.tar.gz
     cd backend/
+    npm i
     npm run build
     cd dist
     pm2 start npm --name backend -- start
