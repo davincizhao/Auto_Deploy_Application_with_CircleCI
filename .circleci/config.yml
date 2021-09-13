@@ -400,6 +400,7 @@ jobs:
             then
               echo "backend server is up and running"
               return 0
+            fi
       - run:
           name: Frontend smoke test.
           command: |
