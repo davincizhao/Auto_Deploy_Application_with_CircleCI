@@ -396,7 +396,10 @@ jobs:
             BE_IP=$(curl -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" \
               --request GET https://api.memstash.io/values/IP)
             URL="http://${BE_IP}:3030/api/status"
-            curl -s "${URL}" 
+            if curl -s "${URL}" | grep "ok"
+            then
+              echo "backend server is up and running"
+              return 0
       - run:
           name: Frontend smoke test.
           command: |
@@ -411,17 +414,7 @@ jobs:
 workflows:
   test_deploy:      
     jobs:
-      - deploy-infrastructure
-              #requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      - configure-infrastructure: 
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]      
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
+      - smoke-test
+         
 
 
