@@ -199,12 +199,16 @@ jobs:
           name: Add back-end ip to ansible inventory
           command: |
             echo "[web]" > .circleci/ansible/inventory.txt
-
-            aws ec2 describe-instances   \
+            # save BACKEND PUBLIC IP into memstash 
+            BE_IP=`aws ec2 describe-instances   \
               --query Reservations[*].Instances[*].[PublicIpAddress] \
               --filters Name=tag-value,Values="backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --output text >> .circleci/ansible/inventory.txt
+              --output text`
+            echo ${BE_IP} >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
+            curl -H "Content-Type: text/plain" -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" \
+                --request PUT \
+                --data $BE_IP https://api.memstash.io/values/IP             
 
       - persist_to_workspace:
           root: ~/
@@ -317,9 +321,12 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
+            BE_IP=`curl -H "Content-Type: text/plain" -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" \
+               --request GET \
+               https://api.memstash.io/values/IP`                  
             cd frontend && \
-            export BE_IP=`tail .circleci/ansible/inventory.txt -n 1`
-            echo ${BE_IP}
+            
+            echo ${BE_IP} && \
             export API_URL="http://${BE_IP}:3030" && \
             echo API_URL=$API_URL && \
             echo API_URL=$API_URL > .env && \
