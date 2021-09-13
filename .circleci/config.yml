@@ -366,6 +366,7 @@ jobs:
           command: |
             tar -C backend -czvf backend_artifact.tar.gz . && \
             cd .circleci/ansible && \
+            export ANSIBLE_HOST_KEY_CHECKING=False && \
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy_environment:
           wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
