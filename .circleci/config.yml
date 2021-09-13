@@ -303,14 +303,15 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli      
+      - image: python:3.7-alpine3.11      
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
             # your code here                  
-            apk add --update tar gzip ansible nodejs npm curl
+            apk add --update tar gzip nodejs npm 
+            pip install awscli
       - attach_workspace:
             at: ~/            
       - run:
@@ -386,8 +387,9 @@ workflows:
       - run-migrations:
           requires: [configure-infrastructure]      
       - deploy-frontend:
-          requires: [deploy-infrastructure]      
-
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
 
 
 
