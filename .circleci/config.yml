@@ -453,11 +453,11 @@ jobs:
 
             echo ${StackOption}
             echo ${StackName} 
-            cat .circleci/files/cloudfront.yml
+            #cat .circleci/files/cloudfront.yml
 
-            aws cloudformation update-stack \
-              --template-file .circleci/files/cloudfront.yml \
+            aws cloudformation ${StackOption} \
               --stack-name $StackName \
+              --template-body file://./.circleci/files/cloudfront.yml \
               --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
               --tags project=project-CircleCI
 
