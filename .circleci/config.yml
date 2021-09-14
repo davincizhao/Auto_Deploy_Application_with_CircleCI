@@ -458,8 +458,8 @@ jobs:
             aws cloudformation ${StackOption} \
               --stack-name $StackName \
               --template-body file://./.circleci/files/cloudfront.yml \
-              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
-              --tags project=project-CircleCI
+              --parameter WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
+              --tags Key=Name,  Value=project-CircleCI
 
       - persist_to_workspace:
           root: .circleci/ansible/
