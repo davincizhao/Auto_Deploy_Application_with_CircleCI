@@ -452,11 +452,11 @@ jobs:
             fi
 
             echo ${StackOption}
-            
+            echo ${StackName} 
+
             aws cloudformation ${StackOption} \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name $StackName \
-              --region ${AWS_DEFAULT_REGION} \
               --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
               --tags project=project-CircleCI
 
@@ -517,33 +517,7 @@ jobs:
 workflows:
   Kun_circleci_project:      
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [main]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update:
-          requires: [smoke-test]
+      - cloudfront-update
       - cleanup:
           requires: [cloudfront-update]
 
