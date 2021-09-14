@@ -458,7 +458,7 @@ jobs:
             aws cloudformation ${StackOption} \
               --stack-name $StackName \
               --template-body file://./.circleci/files/cloudfront.yml \
-              --parameter ParameterKey=WorkflowID, ParameterValue=${CIRCLE_WORKFLOW_ID:0:7} \
+              --parameter ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID:0:7} \
               --tags Key=project,Value=project-CircleCI
 
       - persist_to_workspace:
