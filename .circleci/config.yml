@@ -459,7 +459,7 @@ jobs:
               --stack-name $StackName \
               --template-body file://./.circleci/files/cloudfront.yml \
               --parameter WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
-              --tags Key=Name,  Value=project-CircleCI
+              --tags project=project-CircleCI
 
       - persist_to_workspace:
           root: .circleci/ansible/
