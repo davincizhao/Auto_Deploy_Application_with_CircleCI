@@ -490,7 +490,7 @@ jobs:
       - run:
           name: Remove old stacks and files
           command: |
-            PRE_WORKFLOW_ID=`cat ./.circleci/ansible/pre_wf_id.txt`
+            PRE_WORKFLOW_ID=`cat ./.circleci/ansible/pre_wf_ID.txt`
 
             export CF_STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
                             --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
