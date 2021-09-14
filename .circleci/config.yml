@@ -406,16 +406,42 @@ jobs:
           command: |
             if curl -s  "http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-1.amazonaws.com" | grep "Welcome"
             then
-              return 1
+              return 0
             else
               return 1
             fi
 
 
+
+  cloudfront-update:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            export PRE_WORKFLOW_ID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+              --no-paginate --output text)
+            export CF_STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+              --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
+            curl -H "Content-Type: text/plain" -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" \
+              --request PUT --data "${PRE_WORKFLOW_ID}" \
+              https://api.memstash.io/values/workflow-id
+            echo Last Workflow Id: ${PRE_WORKFLOW_ID}
+            echo Current Workflow Id: ${CIRCLE_WORKFLOW_ID:0:7}
+            echo Stacks available: ${CF_STACKS}
+            aws cloudformation deploy \
+              --template-file .circleci/files/cloudfront.yml \
+              --stack-name udapeople-${CIRCLE_WORKFLOW_ID:0:7} \
+              --region ${AWS_DEFAULT_REGION} \
+              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
+              --tags project=project-CircleCI
+
 workflows:
   test_deploy:      
     jobs:
       - smoke-test
-         
+      - cloudfront-update   
 
 
