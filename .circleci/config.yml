@@ -1,8 +1,5 @@
 version: 2.1
 
-
-
-
 commands:
 
   print_id:
@@ -287,6 +284,8 @@ jobs:
           command: |
             cd backend
             cat .env
+            npm i
+            npm run premigrations
             npm run migrations > migrations.log
             cat migrations.log
       - run:
@@ -295,8 +294,7 @@ jobs:
             cd backend
             if grep -q "has been executed successfully" migrations.log
             then
-                curl -H "Content-Type: text/plain" -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
-            else    
+              
                 curl -H "Content-Type: text/plain" -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" --request PUT --data "0" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
                           
             fi
@@ -410,6 +408,10 @@ jobs:
             else
               return 1
             fi
+      - destroy_environment:
+          wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations:
+          wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
 
 
@@ -427,7 +429,7 @@ jobs:
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
             curl -H "Content-Type: text/plain" -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" \
               --request PUT --data "${PRE_WORKFLOW_ID}" \
-              https://api.memstash.io/values/workflow-id
+              https://api.memstash.io/values/pre_workflow_id
             echo Last Workflow Id: ${PRE_WORKFLOW_ID}
             echo Current Workflow Id: ${CIRCLE_WORKFLOW_ID:0:7}
             echo Stacks available: ${CF_STACKS}
@@ -437,11 +439,74 @@ jobs:
               --region ${AWS_DEFAULT_REGION} \
               --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
               --tags project=project-CircleCI
+      - destroy_environment:
+          wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations:
+          wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+
+  cleanup:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Remove old stacks and files
+          command: |
+            export PRE_WORKFLOW_ID=$(curl -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" --request GET \
+                                      https://api.memstash.io/values/pre-workflow-id)
+            export CF_STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+                            --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
+              
+            echo Last Workflow Id:${PRE_WORKFLOW_ID}
+            echo "Current workflow ID:${CIRCLE_WORKFLOW_ID:0:7}"
+            echo ${CF_STACKS}
+            if printf '%s\n' "${CF_STACKS[@]}" | grep -q "$PRE_WORKFLOW_ID"; then
+              echo "Removing previous cloudformation stack"
+              aws s3 rm s3://udapeople-${PRE_WORKFLOW_ID} --recursive
+              aws cloudformation delete-stack --stack-name BE-${PRE_WORKFLOW_ID}
+              aws cloudformation delete-stack --stack-name FE-${PRE_WORKFLOW_ID}
+            fi
+      - destroy_environment:
+          wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations:
+          wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
+     
+
+
 
 workflows:
-  test_deploy:      
+  Kun_circleci_project:      
     jobs:
-      - smoke-test
-      - cloudfront-update   
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [master]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
+      - cloudfront-update:
+          requires: [smoke-test]
+      - cleanup:
+          requires: [cloudfront-update]
+
 
 
