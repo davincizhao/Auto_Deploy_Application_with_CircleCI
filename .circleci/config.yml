@@ -422,24 +422,50 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install dependencies
+          command: |
+            yum -y install tar 
+            yum -y install gzip
+      - run:
           name: Update cloudfront distribution
           command: |
-            export PRE_WORKFLOW_ID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-              --no-paginate --output text)
-            export CF_STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-              --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
-            curl -H "Content-Type: text/plain" -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" \
-              --request PUT --data "${PRE_WORKFLOW_ID}" \
-              https://api.memstash.io/values/pre_workflow_id
-            echo Last Workflow Id: ${PRE_WORKFLOW_ID}
-            echo Current Workflow Id: ${CIRCLE_WORKFLOW_ID:0:7}
-            echo Stacks available: ${CF_STACKS}
-            aws cloudformation deploy \
+            aws cloudformation list-exports \
+            --query "Exports[?Name=='WorkflowID'].Value" \
+            --no-paginate \
+            --output text > ./.circleci/ansible/pre_wf_ID.txt
+            if [ -s "./.circleci/ansible/pre_wf_ID.txt" ]
+            then
+              cat ./.circleci/ansible/pre_wf_ID.txt
+              PRE_WORKFLOW_ID=`cat ./.circleci/ansible/pre_wf_ID.txt`
+            else
+              echo "New stack will be created"
+            fi
+            
+            if [ -n "$PRE_WORKFLOW_ID" ]
+            then
+              echo $PRE_WORKFLOW_ID
+              StackOption=update-stack
+              StackName=udapeople-$PRE_WORKFLOW_ID
+            else
+              StackOption=create-stack
+              StackName=udapeople-${CIRCLE_WORKFLOW_ID:0:7}
+            fi
+
+
+            
+            aws cloudformation $StackOption \
               --template-file .circleci/files/cloudfront.yml \
-              --stack-name udapeople-${CIRCLE_WORKFLOW_ID:0:7} \
+              --stack-name $StackName \
               --region ${AWS_DEFAULT_REGION} \
               --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
               --tags project=project-CircleCI
+
+      - persist_to_workspace:
+          root: .circleci/ansible/
+          paths:
+            - pre_wf_ID.txt
+
+
       - destroy_environment:
           wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - revert-migrations:
@@ -452,21 +478,33 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install dependencies
+          command: |
+            yum -y install tar 
+            yum -y install gzip
+      - attach_workspace:
+          at: .circleci/ansible/
+
+
+      - run:
           name: Remove old stacks and files
           command: |
-            export PRE_WORKFLOW_ID=$(curl -H "token: 168adf74-cf73-4306-b98b-ef5840ec7fac" --request GET \
-                                      https://api.memstash.io/values/pre-workflow-id)
+            PRE_WORKFLOW_ID=`cat ./.circleci/ansible/pre_wf_id.txt`
+
             export CF_STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
                             --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
               
             echo Last Workflow Id:${PRE_WORKFLOW_ID}
             echo "Current workflow ID:${CIRCLE_WORKFLOW_ID:0:7}"
             echo ${CF_STACKS}
-            if printf '%s\n' "${CF_STACKS[@]}" | grep -q "$PRE_WORKFLOW_ID"; then
+            if [ -n "$PRE_WORKFLOW_ID" ]; then
               echo "Removing previous cloudformation stack"
               aws s3 rm s3://udapeople-${PRE_WORKFLOW_ID} --recursive
+              aws s3 rb s3://udapeople-${PRE_WORKFLOW_ID} --force
               aws cloudformation delete-stack --stack-name BE-${PRE_WORKFLOW_ID}
               aws cloudformation delete-stack --stack-name FE-${PRE_WORKFLOW_ID}
+            else
+              echo "No pre workflow exist, don't need to remove anything"
             fi
       - destroy_environment:
           wf_id: ${CIRCLE_WORKFLOW_ID:0:7}
