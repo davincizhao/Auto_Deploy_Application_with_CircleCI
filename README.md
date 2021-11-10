@@ -19,9 +19,11 @@ Tools:
 ![snapshot1](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT01.png)
 ### 2 Atfer build, Test backend and find out error, troubleshooting.
 ![snapshot2](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT02.png)
-### 3 Build Frontend code and find out the error, troubleshooting in build Stage.
+### 3 Build Frontend code and find out the error, Scan front-end dependencies, troubleshooting in build Stage.
 ![snapshot3](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT03.png)
+### 4 Deploy infrastructure (frontend and backend), aws cli,aws cloudformation, etract back-end ip to ansible inventory
 ![snapshot4](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT04.png)
+### 5 Test infrastructure, ensure the backend infrastructure exist
 ![snapshot5](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT05.png)
 ![snapshot6](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT06.png)
 ![snapshot7](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT07.png)
