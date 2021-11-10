@@ -21,14 +21,19 @@ Tools:
 ![snapshot2](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT02.png)
 ### 3 Build Frontend code and find out the error, Scan front-end dependencies, troubleshooting in build Stage.
 ![snapshot3](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT03.png)
-### 4 Deploy infrastructure (frontend and backend), aws cli,aws cloudformation, etract back-end ip to ansible inventory
+### 4 Auto send alter to email, when there's fail job or step in CircleCI pipeline. 
 ![snapshot4](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT04.png)
-### 5 Test infrastructure, ensure the backend infrastructure exist
+### 5 Deploy infrastructure (frontend and backend), aws cli,aws cloudformation, etract back-end ip to ansible inventory,Test infrastructure, ensure the backend infrastructure exist
 ![snapshot5](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT05.png)
+### 6 After Deploy, Smoket test both frontend and backend
 ![snapshot6](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT06.png)
+### 7 Smoket test, if there's error, auto destroy infrastructure and revert migrations.
 ![snapshot7](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT07.png)
+### 8 Smoket test is ok, now Update cloudfront distribution.
 ![snapshot8](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT08.png)
+### 9 Deploy infrastructure
 ![snapshot9](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT09.png)
+### 10 Deploy infrastructure
 ![snapshot10](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT10.png)
 ### 11 Prometheus: EC2 server in AWS connected to prometheus server
 ![snapshot11](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT11.png)
