@@ -3,14 +3,14 @@ CircleCI build pipeline on AWS with CloudFormation, deploy appliction backend an
 
 
 ## Propose and Scope the Project
-- CI/CD tool platform: CircleCI Cloud,AWS Cloudformation,AWS CLI, S3
+- CI/CD tool platform: CircleCI Cloud,AWS Cloudformation,AWS CLI, AWS S3,AWS Cloudfront
 - Application: NodeJS，NPM
 - Repo: Github
 
 
 ## Tools
 Tools:
-- npm
+- NPM, package manager for the JavaScript
 - CircleCI
 - AWS CLI, for AWS command line
 - Ansible, for Config the backend server, configure prometheus and node-exporter in backend, deploy "backend artifact" and start npm。
@@ -37,5 +37,5 @@ Tools:
 ![snapshot10](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT10.png)
 ### 11 Prometheus: EC2 server in AWS connected to prometheus server
 ![snapshot11](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT11.png)
-### 12 Altermanger,for monitoring CI/CD pipeline status, send alter message to slack
+### 12 Altermanger,for monitoring backend server status in AWS, auto send alter messages to slack
 ![snapshot12](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT12.png)
