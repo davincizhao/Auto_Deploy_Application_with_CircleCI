@@ -24,9 +24,11 @@ Tools:
 - Prometheus,for monitoring the EC2 backend server.
 ## Snapshot
 ### Pre-requirement
-
+1. Set up Github repo with CircleCI
 ![pre1](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/setup_circleci%20project.png)
+2. Save AWS credentials in env in Circle
 ![cred](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/setp_cred.png)
+3. Write and set up config.yml(pipeline jobs and steps)
 ![pre2](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/setup_ci2.png)
 ### 1 Build Backend node.js code and find out the error, troubleshooting in build Stage.
 ![snapshot1](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT01.png)
