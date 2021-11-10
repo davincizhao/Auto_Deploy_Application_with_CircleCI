@@ -3,7 +3,9 @@ CircleCI build pipeline on AWS with CloudFormation, deploy appliction backend an
 
 
 ## Propose and Scope the Project
-- CI/CD tool platform: CircleCI Cloud,AWS Cloudformation,AWS CLI, AWS S3,AWS Cloudfront
+- CI/CD tool platform: CircleCI Cloud,AWS Cloudformation,AWS CLI, AWS EC2, AWS S3,AWS Cloudfront
+- Config tool: Ansible
+- Monitoring: Prometheus, Altermanager
 - Application: NodeJS，NPM
 - Repo: Github
 
