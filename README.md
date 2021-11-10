@@ -48,4 +48,4 @@ Tools:
 ### 11 Prometheus: EC2 server in AWS connected to prometheus server
 ![snapshot11](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT11.png)
 ### 12 Altermanger,for monitoring backend server status in AWS, auto send alter messages to slack
-![snapshot12](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT12.png)
+![snapshot12](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT12_1.png)
