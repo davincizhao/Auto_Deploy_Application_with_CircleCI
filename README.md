@@ -25,15 +25,15 @@ Tools:
 ![snapshot4](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT04.png)
 ### 5 Deploy infrastructure (frontend and backend), aws cli,aws cloudformation, etract back-end ip to ansible inventory,Test infrastructure, ensure the backend infrastructure exist
 ![snapshot5](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT05.png)
-### 6 After Deploy, Smoket test both frontend and backend
+### 6 After Deploy, Smoke test both frontend and backend
 ![snapshot6](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT06.png)
-### 7 Smoket test, if there's error, auto destroy infrastructure and revert migrations.
+### 7 Smoke test, if there's error, auto destroy enviroments(cloudformation stacks with workflow ID) in AWS and revert migrations.
 ![snapshot7](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT07.png)
-### 8 Smoket test is ok, now Update cloudfront distribution.
+### 8 Smoke test is ok, now Update cloudfront distribution.
 ![snapshot8](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT08.png)
-### 9 Deploy infrastructure
+### 9 Clear up, Remove old stacks and S3 files in AWS 
 ![snapshot9](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT09.png)
-### 10 Deploy infrastructure
+### 10 According to different github branch, run specify jobs, like in build stage, only run "build and test" job in CircleCI
 ![snapshot10](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT10.png)
 ### 11 Prometheus: EC2 server in AWS connected to prometheus server
 ![snapshot11](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT11.png)
