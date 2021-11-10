@@ -21,6 +21,10 @@ Tools:
 - AWS CLI, for AWS command line
 - Ansible, for Config the backend server, configure prometheus and node-exporter in backend, deploy "backend artifact" and start npm。
 - Prometheus,for monitoring the EC2 backend server.
+
+### Pre-requirement
+![pre1](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/setup_circleci%20project.png)
+![pre2](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/setup_ci2.png)
 ### 1 Build Backend node.js code and find out the error, troubleshooting in build Stage.
 ![snapshot1](https://github.com/davincizhao/Auto_Deploy_Application_with_CircleCI/blob/main/snapshot/SCREENSHOT01.png)
 ### 2 Atfer build, Test backend and find out error, troubleshooting.
