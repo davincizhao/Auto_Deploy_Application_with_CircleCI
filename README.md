@@ -1,6 +1,10 @@
 # Auto_Deploy_Application_with_CircleCI
 CircleCI build pipeline on AWS with CloudFormation, deploy appliction backend and frontend in AWS, with AWS CLI,Ansible, Prometheus, AWS CLI,AIM
 
+## Pre-requirement
+Login in CircleCI.com and connect your github with circleci.
+- 1. select project that you want to work in CircleCI, and press "Set Up Project"
+- 2. create new config.yaml or choose from repos ".circleci/config.yaml"
 
 ## Propose and Scope the Project
 - CI/CD tool platform: CircleCI Cloud,AWS Cloudformation,AWS CLI, AWS EC2, AWS S3,AWS Cloudfront
